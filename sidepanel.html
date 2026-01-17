@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Transcript</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="24" height="24" rx="6" fill="#FF0000"/>
+          <path d="M10 8L16 12L10 16V8Z" fill="white"/>
+        </svg>
+        <div class="title-group">
+          <h1>Transcript Fetcher</h1>
+          <span class="subtitle">YouTube captions made easy</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Auto-detect current tab section -->
+      <section class="section">
+        <button id="detectBtn" class="primary-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 16v-4"/>
+            <path d="M12 8h.01"/>
+          </svg>
+          <span>Get from Current Tab</span>
+        </button>
+      </section>
+
+      <!-- Picker Section -->
+      <section class="section">
+        <button id="pickerBtn" class="secondary-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
+            <path d="M13 13l6 6"/>
+          </svg>
+          <span>Select Video from Page</span>
+        </button>
+      </section>
+
+      <!-- Manual URL Input -->
+      <section class="section">
+        <div class="section-header">
+          <span class="section-title">Or paste URL</span>
+        </div>
+        <div class="input-group">
+          <input
+            type="text"
+            id="videoUrl"
+            placeholder="youtube.com/watch?v=..."
+            autocomplete="off"
+          >
+          <button id="fetchBtn" class="fetch-btn" title="Fetch transcript">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14"/>
+              <path d="M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Status -->
+      <div id="status" class="status"></div>
+
+      <!-- Options (collapsible) -->
+      <section class="section options-section" id="optionsSection">
+        <button class="collapse-toggle" id="optionsToggle">
+          <span>Options</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+        <div class="collapse-content" id="optionsContent">
+          <label class="checkbox-label">
+            <input type="checkbox" id="includeTimestamps" checked>
+            <span>Include timestamps</span>
+          </label>
+
+          <label class="checkbox-label">
+            <input type="checkbox" id="useTimestamps">
+            <span>Filter by time range</span>
+          </label>
+
+          <div class="time-range" id="timeRange">
+            <div class="time-input">
+              <label>Start</label>
+              <input type="text" id="startTime" placeholder="0:00">
+            </div>
+            <div class="time-input">
+              <label>End</label>
+              <input type="text" id="endTime" placeholder="0:00">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Transcript Output -->
+      <section id="transcriptSection" class="transcript-section hidden">
+        <div class="transcript-header">
+          <div class="video-info" id="videoInfo"></div>
+          <div class="transcript-actions">
+            <button id="speedReaderBtn" class="icon-btn" title="Speed Reader">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polygon points="10 8 16 12 10 16 10 8"/>
+              </svg>
+            </button>
+            <button id="copyBtn" class="icon-btn" title="Copy to clipboard">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+            </button>
+            <div class="download-dropdown">
+              <button id="downloadBtn" class="icon-btn" title="Download">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+              </button>
+              <div id="downloadMenu" class="download-menu">
+                <button class="download-option" data-format="txt">
+                  <span class="format-icon">TXT</span>
+                  <span class="format-info">
+                    <span class="format-name">Plain Text</span>
+                    <span class="format-desc">Simple text file</span>
+                  </span>
+                </button>
+                <button class="download-option" data-format="json">
+                  <span class="format-icon">JSON</span>
+                  <span class="format-info">
+                    <span class="format-name">JSON</span>
+                    <span class="format-desc">Structured data with timestamps</span>
+                  </span>
+                </button>
+                <button class="download-option" data-format="srt">
+                  <span class="format-icon">SRT</span>
+                  <span class="format-info">
+                    <span class="format-name">SubRip Subtitle</span>
+                    <span class="format-desc">Standard subtitle format</span>
+                  </span>
+                </button>
+                <button class="download-option" data-format="vtt">
+                  <span class="format-icon">VTT</span>
+                  <span class="format-info">
+                    <span class="format-name">WebVTT</span>
+                    <span class="format-desc">Web video subtitle format</span>
+                  </span>
+                </button>
+                <button class="download-option" data-format="md">
+                  <span class="format-icon">MD</span>
+                  <span class="format-info">
+                    <span class="format-name">Markdown</span>
+                    <span class="format-desc">Formatted with headers</span>
+                  </span>
+                </button>
+                <button class="download-option" data-format="csv">
+                  <span class="format-icon">CSV</span>
+                  <span class="format-info">
+                    <span class="format-name">CSV</span>
+                    <span class="format-desc">Spreadsheet compatible</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="transcriptContent" class="transcript-content"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Speed Reader Modal -->
+  <div id="speedReaderModal" class="speed-reader-modal hidden">
+    <div class="speed-reader-container">
+      <div class="speed-reader-header">
+        <h2>Speed Reader</h2>
+        <button id="closeSpeedReader" class="close-btn" title="Close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18"/>
+            <path d="M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Speed Reader Settings -->
+      <div class="speed-reader-settings">
+        <div class="setting-group">
+          <label>WPM</label>
+          <div class="wpm-control">
+            <button id="wpmDecrease" class="wpm-btn">-</button>
+            <input type="number" id="wpmInput" value="200" min="50" max="1000" step="25">
+            <button id="wpmIncrease" class="wpm-btn">+</button>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <label>Font</label>
+          <select id="fontSelect">
+            <option value="system-ui, -apple-system, sans-serif">System</option>
+            <option value="Georgia, serif">Georgia</option>
+            <option value="Verdana, sans-serif">Verdana</option>
+            <option value="'Courier New', monospace">Mono</option>
+            <option value="'Brush Script MT', 'Segoe Script', cursive">Cursive</option>
+            <option value="'Comic Sans MS', cursive">Comic Sans</option>
+          </select>
+        </div>
+
+        <div class="setting-group">
+          <label>Size</label>
+          <select id="fontSizeSelect">
+            <option value="32">Small</option>
+            <option value="48" selected>Medium</option>
+            <option value="64">Large</option>
+            <option value="80">XL</option>
+            <option value="96">XXL</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Word Display Area -->
+      <div class="speed-reader-display">
+        <div id="wordDisplay" class="word-display">Ready</div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+      <div class="progress-info">
+        <span id="wordCount">0 / 0 words</span>
+        <span id="timeRemaining">0:00 remaining</span>
+      </div>
+
+      <!-- Playback Controls -->
+      <div class="playback-controls">
+        <button id="restartBtn" class="control-btn" title="Restart">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+        </button>
+        <button id="backwardBtn" class="control-btn" title="Back 10 words">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 19 2 12 11 5 11 19"/>
+            <polygon points="22 19 13 12 22 5 22 19"/>
+          </svg>
+        </button>
+        <button id="playPauseBtn" class="control-btn play-btn" title="Play/Pause">
+          <svg id="playIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <svg id="pauseIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hidden">
+            <rect x="6" y="4" width="4" height="16"/>
+            <rect x="14" y="4" width="4" height="16"/>
+          </svg>
+        </button>
+        <button id="forwardBtn" class="control-btn" title="Forward 10 words">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 19 22 12 13 5 13 19"/>
+            <polygon points="2 19 11 12 2 5 2 19"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Keyboard Shortcuts Help -->
+      <div class="shortcuts-help">
+        <span>Space: Play/Pause</span>
+        <span>Left/Right: Skip words</span>
+        <span>Up/Down: Adjust WPM</span>
+        <span>Esc: Close</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

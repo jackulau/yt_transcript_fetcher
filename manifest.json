@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Transcript Fetcher",
+  "version": "2.0.0",
+  "description": "Fetch YouTube transcripts with multi-format export (TXT, JSON, SRT, VTT, MD, CSV), speed reader, and timestamp filtering",
+  "permissions": [
+    "activeTab",
+    "clipboardWrite",
+    "scripting",
+    "sidePanel",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Open YouTube Transcript Fetcher"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
