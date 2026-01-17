@@ -60,9 +60,14 @@ async function handleMessage(message, sender, sendResponse) {
       case 'PICKER_CANCELLED':
       case 'PICKER_TIMEOUT':
         // Forward these messages to the sidepanel
-        chrome.runtime.sendMessage(message).catch(() => {
-          // Sidepanel might not be open, ignore error
-        });
+        console.log('Background forwarding message:', message.type);
+        chrome.runtime.sendMessage(message)
+          .then((response) => {
+            console.log('Message forwarded successfully:', response);
+          })
+          .catch((err) => {
+            console.log('Message forward error (sidepanel may not be open):', err);
+          });
         sendResponse({ success: true });
         break;
 
