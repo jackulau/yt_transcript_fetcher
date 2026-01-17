@@ -4,7 +4,7 @@ A Chrome extension with a sleek sidebar UI that instantly fetches YouTube video 
 
 ## Demo
 
-https://github.com/jackulau/yt_transcript_fetcher/raw/main/demo.mp4
+<video src="https://github.com/jackulau/yt_transcript_fetcher/raw/main/demo.mp4" controls width="100%"></video>
 
 ## Features
 
