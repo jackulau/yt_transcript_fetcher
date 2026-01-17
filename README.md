@@ -2,10 +2,6 @@
 
 A Chrome extension with a sleek sidebar UI that instantly fetches YouTube video transcripts.
 
-## Demo
-
-<video src="https://github.com/jackulau/yt_transcript_fetcher/raw/main/demo.mp4" controls width="100%"></video>
-
 ## Features
 
 - **Sidebar Interface** - Clean, always-accessible side panel (like Claude's extension)
