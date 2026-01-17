@@ -1,6 +1,9 @@
 # YouTube Transcript Fetcher
 
 A Chrome extension with a sleek sidebar UI that instantly fetches YouTube video transcripts.
+# Demo
+
+https://github.com/user-attachments/assets/01f4e21f-99bb-4c7d-b6ca-734f8e1c2380
 
 ## Features
 
