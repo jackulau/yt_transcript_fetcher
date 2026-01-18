@@ -106,25 +106,20 @@ fontSizeSelect.addEventListener('change', updateFontSize);
 // Speed Reader Keyboard Shortcuts
 document.addEventListener('keydown', handleSpeedReaderKeyboard);
 
-// Listen for messages from content script (via background)
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log('Sidepanel received message:', message.type);
+// Establish port connection to background for reliable messaging
+const backgroundPort = chrome.runtime.connect({ name: 'sidepanel' });
+backgroundPort.onMessage.addListener((message) => {
   if (message.type === 'YOUTUBE_URL_SELECTED') {
     videoUrlInput.value = message.url;
     fetchTranscript(message.url);
     resetPickerButton();
-    sendResponse({ received: true });
   } else if (message.type === 'PICKER_CANCELLED') {
-    console.log('Picker cancelled - resetting button');
     showStatus('Selection cancelled', 'error');
     resetPickerButton();
-    sendResponse({ received: true });
   } else if (message.type === 'PICKER_TIMEOUT') {
     showStatus('Selection timed out', 'error');
     resetPickerButton();
-    sendResponse({ received: true });
   }
-  return true;
 });
 
 // Update transcript display when options change

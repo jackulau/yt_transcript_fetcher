@@ -3,6 +3,19 @@
 // Store pending transcript requests
 const pendingRequests = new Map();
 
+// Store connected sidepanel ports for reliable messaging
+let sidepanelPort = null;
+
+// Listen for port connections from sidepanel
+chrome.runtime.onConnect.addListener((port) => {
+  if (port.name === 'sidepanel') {
+    sidepanelPort = port;
+    port.onDisconnect.addListener(() => {
+      sidepanelPort = null;
+    });
+  }
+});
+
 // Open side panel when extension icon is clicked
 chrome.action.onClicked.addListener(async (tab) => {
   await chrome.sidePanel.open({ tabId: tab.id });
@@ -59,15 +72,10 @@ async function handleMessage(message, sender, sendResponse) {
       case 'YOUTUBE_URL_SELECTED':
       case 'PICKER_CANCELLED':
       case 'PICKER_TIMEOUT':
-        // Forward these messages to the sidepanel
-        console.log('Background forwarding message:', message.type);
-        chrome.runtime.sendMessage(message)
-          .then((response) => {
-            console.log('Message forwarded successfully:', response);
-          })
-          .catch((err) => {
-            console.log('Message forward error (sidepanel may not be open):', err);
-          });
+        // Forward these messages to the sidepanel via port
+        if (sidepanelPort) {
+          sidepanelPort.postMessage(message);
+        }
         sendResponse({ success: true });
         break;
 
